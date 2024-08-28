@@ -1,0 +1,8 @@
+include: package:flutter_lints/flutter.yaml
+
+analyser:
+  exclude:
+    -'**/*.g.dart'
+    -'**/*.freezed.dart'
+  error:
+    invalid_annotation_target: ignore
