@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PlanteController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HistoriqueTchatController;
+use App\Http\Controllers\ChatController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -33,9 +34,30 @@ Route::post('/plantes', [PlanteController::class, 'store']);
 Route::get('/getAllPlantes', [PlanteController::class, 'index']);
 ///liste de tout les messages
 Route::get('/getAllMessages', [HistoriqueTchatController::class, 'index']);
+///liste de tout les messages historique
+Route::get('/chatHistorical', [HistoriqueTchatController::class, 'getAllHistoriqueMessage']);
 ///post message
 Route::post('/postMessages', [HistoriqueTchatController::class, 'store']); 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth.jwt');
 Route::post('refresh', [AuthController::class, 'refresh'])->middleware('auth.jwt');
-Route::get('me', [AuthController::class, 'me'])->middleware('auth.jwt');
+Route::get('me', [AuthController::class, 'me']);
+
+Route::post('/user-from-token', [AuthController::class, 'getUserFromToken']);
+
+Route::get('/test-jwt', function () {
+    $key = env('JWT_SECRET'); // Assurez-vous que vous avez défini JWT_SECRET dans .env
+    $jwt = request('token'); // Assurez-vous d'envoyer le token via la requête
+
+    try {
+        $decoded = \Firebase\JWT\JWT::decode($jwt, $key, array('HS256'));
+        return response()->json($decoded);
+    } catch (Exception $e) {
+        return response()->json(['error' => 'Échec de la validation du token : ' . $e->getMessage()], 400);
+    }
+});
+
+Route::get('chats/{id_user}', [ChatController::class, 'getChatsByUser']);
+Route::post('chats/insert', [ChatController::class, 'insert']);
+
+Route::delete('/usersDelete/{id}', [UserController::class, 'destroy']);

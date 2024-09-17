@@ -55,5 +55,24 @@ class UserController extends Controller
     {
         return Hash::check($password, $this->mot_de_passe);
     }
+
+    public function destroy($id)
+    {
+        // Trouver l'utilisateur par ID
+        $user = User::find($id);
+
+        // Si l'utilisateur existe, le supprimer
+        if ($user) {
+            $user->delete();
+            return response()->json([
+                'message' => 'Utilisateur supprimé avec succès.',
+            ], 200);
+        }
+
+        // Si l'utilisateur n'existe pas
+        return response()->json([
+            'message' => 'Utilisateur non trouvé.',
+        ], 404);
+    }
     
 }

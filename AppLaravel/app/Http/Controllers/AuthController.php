@@ -21,7 +21,7 @@ class AuthController extends Controller
         if ($user && $user->validatePassword($password)) {
             // Générer un jeton JWT pour l'utilisateur
             $token = JWTAuth::fromUser($user);
-
+            \Log::info('Generated JWT Token:', ['token' => $token]);
             // Retourner le jeton JWT
             return response()->json(compact('token'));
         } else {
@@ -45,5 +45,17 @@ class AuthController extends Controller
     {
         $user = JWTAuth::parseToken()->authenticate();
         return response()->json(compact('user'));
+    }
+
+    public function getUserFromToken(Request $request)
+    {
+        $token = $request->input('token');
+
+        try {
+            $user = JWTAuth::toUser($token);
+            return response()->json(compact('user'));
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Token invalid'], 401);
+        }
     }
 }
